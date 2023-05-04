@@ -15,9 +15,29 @@ class DataBaseMethods():
     
     @staticmethod
     def get_collection(db, collection_name: str):
-        doc_ref = db.collection(f"{collection_name}").document()
+        col_ref = db.collection(f"{collection_name}")
+        return col_ref
+    
+    @staticmethod
+    def create_empty_document(col_ref):
+        doc_ref = col_ref.document()
         return doc_ref
     
     @staticmethod
-    def add_to_collection(doc_ref, data: Dict[str, str]):
-        pass
+    def add_new_info_to_document(doc_ref, data: Dict[str, any]):
+        response = doc_ref.set(data)
+        return response
+
+    @staticmethod
+    def fetch_doc_id(doc_ref):
+        doc_id = doc_ref.id
+        return doc_id
+    
+    @staticmethod
+    def fetch_doc(db, col_ref, document_name):
+        doc = db.document(f"{col_ref}/{document_name}").get().to_dict()
+        return doc
+
+    @staticmethod
+    def update_document_attribute(doc_ref, data: Dict[str, str]):
+        doc_ref.update(data)

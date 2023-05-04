@@ -20,6 +20,29 @@ class User(AbstractUser):
 
     def register_user(self):
         db = DBM.get_db()
+        user_collection = DBM.get_collection(db, "Users")
+        empty_user = DBM.create_empty_document(user_collection)
+        doc_id = DBM.fetch_doc_id(empty_user)
+
+        user_info = {
+            "email":f"{self.email}",
+            "UID":f"{doc_id}",
+            "groups":self.groups,
+            "friends":self.friends,
+            "usersToPay":self.usersToPay,
+            "usersToReceive":self.usersToReceive,
+            "totalToPay":self.totalToPay,
+            "totalToReceive":self.totalToReceive
+        }
+        try:
+            DBM.add_new_info_to_document(empty_user, user_info)
+            print(f"User was created with UID: {doc_id}")
+            new_user = DBM.fetch_doc(db, "Users", doc_id)
+            return new_user
+
+        except Exception as e:
+            print(f"Error: {e}")
+
 
     def pay_user(self, userID: str, amount: float):
         db = DBM.get_db()
@@ -47,5 +70,8 @@ class User(AbstractUser):
 
     def get_payment(self, userID: str, amount: float):
         db = DBM.get_db()
+
+    def check_debt_with_friend(self, userID: str):
+        pass
 
     
