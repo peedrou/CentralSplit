@@ -46,5 +46,9 @@ class AbstractUser(ABC):
         pass
 
     @abstractmethod
+    def check_debt_with_friend(self, userID: str):
+        pass
+
+    @abstractmethod
     def get_payment(self, userID: str, amount: float):
         pass
