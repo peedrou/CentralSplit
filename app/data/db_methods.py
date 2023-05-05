@@ -24,6 +24,11 @@ class DataBaseMethods():
         return doc_ref
     
     @staticmethod
+    def create_document_with_title(col_ref: fs.CollectionReference, title: str):
+        doc_ref = col_ref.document(title)
+        return doc_ref
+    
+    @staticmethod
     def add_new_info_to_document(doc_ref, data: Dict[str, any]):
         response = doc_ref.set(data)
         return response
@@ -41,3 +46,11 @@ class DataBaseMethods():
     @staticmethod
     def update_document_attribute(doc_ref, data: Dict[str, str]):
         doc_ref.update(data)
+
+    @staticmethod
+    def check_if_property_exists(db, collection_name: str, key: str, value: str) -> bool:
+        docs = db.collection(collection_name).where(key, "==", value).get()
+        if len(docs) > 0:
+            return True
+        else:
+            return False

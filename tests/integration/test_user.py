@@ -1,14 +1,23 @@
+import random
+import pytest
+
 from dotenv import load_dotenv
 from app.assets.users.user import User
-from app.data.db_methods import DataBaseMethods as DBM
 
 load_dotenv()
 
+
 class TestUser():
+
+    def _make_random_email(self) -> str:
+        my_string = "abcdefghijklmnopqrstuvwxyz"
+        random_string = ''.join(random.choices(my_string, k=10))
+        email = random_string + '@gmail.com'
+        return email
 
     def test_register_user(self):
         user = User(
-            email="test@gmail.com",
+            email=self._make_random_email(),
             UID="",
             groups=[],
             friends=[],
@@ -32,3 +41,60 @@ class TestUser():
         }
 
         assert response == user_info
+
+    def test_if_user_exists(self):
+        user = User(
+            email='test@gmail.com',
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+
+        with pytest.raises(Exception) as e:
+            user.register_user()
+        assert str(e.value) == "User already exists"
+
+    def test_create_group(self):
+        user = User(
+            email='test@gmail.com',
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+        members = ['user1','user2','user3']
+        groupName = "Test Group 2"
+
+        response = user.create_group(userIDS=members, groupName=groupName)
+
+        group_info = {
+            'members': members, 
+            'groupName': groupName
+        }
+
+        assert response == group_info
+
+    def test_group_exists(self):
+        user = User(
+            email='test@gmail.com',
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+        members = ['user1','user2','user3']
+        groupName = "Test Group 2"
+
+        with pytest.raises(Exception) as e:
+            user.create_group(userIDS=members, groupName=groupName)
+        assert str(e.value) == "Group already exists with that name, please insert a different name"

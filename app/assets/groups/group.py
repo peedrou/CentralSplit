@@ -1,0 +1,47 @@
+from dataclasses import dataclass
+from typing import List
+
+from app.data.db_methods import DataBaseMethods as DBM
+from dotenv import load_dotenv
+
+from app.support.abstracts.group import AbstractGroup
+
+load_dotenv()
+
+@dataclass
+class Group(AbstractGroup):
+    groupName: str
+    members: List[str]
+
+    def handle_create_group(self):
+        groupName = self.groupName
+
+        db = DBM.get_db()
+        check_group = DBM.check_if_property_exists(db, "Groups", "groupName", groupName)
+
+        if check_group == True:
+            raise Exception("Group already exists with that name, please insert a different name")
+        else:
+            try:
+                group_collection = DBM.get_collection(db, "Groups")
+                doc_ref = DBM.create_document_with_title(group_collection, groupName)
+                group_info = {
+                    "groupName":f"{groupName}",
+                    "members":self.members,
+                }
+                DBM.add_new_info_to_document(doc_ref, group_info)
+                print(f"Group was created with Name: {groupName}")
+                new_group = DBM.fetch_doc(db, "Groups", groupName)
+                return new_group
+            except Exception as e:
+                raise Exception(e)
+    
+
+    def handle_add_users_to_group(self):
+        pass
+
+    def handle_remove_users_from_group(self):
+        pass
+
+    def handle_delete_group(self):
+        pass

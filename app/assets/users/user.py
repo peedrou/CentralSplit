@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Dict
 from app.data.db_methods import DataBaseMethods as DBM
+from app.support.instantiation.instantiation import Instantiation as ITT
 from dotenv import load_dotenv
 
 from app.support.abstracts.user import AbstractUser
@@ -35,20 +36,26 @@ class User(AbstractUser):
             "totalToReceive":self.totalToReceive
         }
         try:
-            DBM.add_new_info_to_document(empty_user, user_info)
-            print(f"User was created with UID: {doc_id}")
-            new_user = DBM.fetch_doc(db, "Users", doc_id)
-            return new_user
+            user_status = DBM.check_if_property_exists(db, "Users", "email", self.email)
+            if user_status == True:
+                raise Exception("User already exists")
+            else:
+                DBM.add_new_info_to_document(empty_user, user_info)
+                print(f"User was created with UID: {doc_id}")
+                new_user = DBM.fetch_doc(db, "Users", doc_id)
+                return new_user
 
-        except Exception as e:
-            print(f"Error: {e}")
+        except Exception:
+            raise Exception("User already exists")
 
 
     def pay_user(self, userID: str, amount: float):
         db = DBM.get_db()
 
     def create_group(self, userIDS: List[str], groupName: str):
-        db = DBM.get_db()
+        group = ITT.instantiate_group(userIDS=userIDS, groupName=groupName)
+        response = group.handle_create_group()
+        return response
 
     def add_users_to_group(self, userIDS: List[str], groupName: str):
         db = DBM.get_db()
@@ -72,6 +79,8 @@ class User(AbstractUser):
         db = DBM.get_db()
 
     def check_debt_with_friend(self, userID: str):
-        pass
+        db = DBM.get_db()
+
+    
 
     
