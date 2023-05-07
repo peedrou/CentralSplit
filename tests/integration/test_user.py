@@ -3,6 +3,7 @@ import pytest
 
 from dotenv import load_dotenv
 from app.assets.users.user import User
+from app.data.db_methods import DataBaseMethods as DBM
 
 load_dotenv()
 
@@ -14,6 +15,12 @@ class TestUser():
         random_string = ''.join(random.choices(my_string, k=10))
         email = random_string + '@gmail.com'
         return email
+    
+    def _make_random_group_name(self) -> str:
+        my_string = "abcdefghijklmnopqrstuvwxyz"
+        random_string = ''.join(random.choices(my_string, k=10))
+        groupName = "Group" + " " + random_string
+        return groupName
 
     def test_register_user(self):
         user = User(
@@ -70,7 +77,7 @@ class TestUser():
             totalToReceive=0
         )
         members = ['user1','user2','user3']
-        groupName = "Test Group 2"
+        groupName = self._make_random_group_name()
 
         response = user.create_group(userIDS=members, groupName=groupName)
 
@@ -98,3 +105,23 @@ class TestUser():
         with pytest.raises(Exception) as e:
             user.create_group(userIDS=members, groupName=groupName)
         assert str(e.value) == "Group already exists with that name, please insert a different name"
+
+    def test_delete_group(self):
+        user = User(
+            email='test@gmail.com',
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+
+        members = ['user1','user2','user3']
+        groupName = self._make_random_group_name()
+        user.create_group(userIDS=members, groupName=groupName)
+        
+        response = user.delete_group(userIDS=None, groupName=groupName)
+
+        assert response == True

@@ -11,13 +11,10 @@ load_dotenv()
 @dataclass
 class Group(AbstractGroup):
     groupName: str
-    members: List[str]
+    members: List[str] | None
 
     def handle_create_group(self):
-        groupName = self.groupName
-
-        db = DBM.get_db()
-        check_group = DBM.check_if_property_exists(db, "Groups", "groupName", groupName)
+        groupName, db, check_group = self.get_group_query("groupName")
 
         if check_group == True:
             raise Exception("Group already exists with that name, please insert a different name")
@@ -31,11 +28,25 @@ class Group(AbstractGroup):
                 }
                 DBM.add_new_info_to_document(doc_ref, group_info)
                 print(f"Group was created with Name: {groupName}")
-                new_group = DBM.fetch_doc(db, "Groups", groupName)
+                new_group = DBM.fetch_doc_info(db, "Groups", groupName)
                 return new_group
             except Exception as e:
                 raise Exception(e)
+
     
+    def handle_delete_group(self):
+        groupName, db, check_group = self.get_group_query("groupName")
+
+        if check_group == True:
+            try:
+                group_collection = DBM.get_collection(db, "Groups")
+                doc_ref = DBM.fetch_doc(group_collection, groupName)
+                response = DBM.delete_document(doc_ref)
+                return response
+            except:
+                raise Exception("Group could not be deleted")
+        else:
+            raise Exception("Group does not exist")
 
     def handle_add_users_to_group(self):
         pass
@@ -43,5 +54,9 @@ class Group(AbstractGroup):
     def handle_remove_users_from_group(self):
         pass
 
-    def handle_delete_group(self):
-        pass
+    def get_group_query(self, property: str):
+        groupName = self.groupName
+
+        db = DBM.get_db()
+        check_group = DBM.check_if_property_exists(db, "Groups", property, groupName)
+        return groupName,db,check_group

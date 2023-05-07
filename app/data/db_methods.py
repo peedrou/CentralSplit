@@ -39,7 +39,12 @@ class DataBaseMethods():
         return doc_id
     
     @staticmethod
-    def fetch_doc(db, col_ref, document_name):
+    def fetch_doc(col_ref, document_name):
+        doc = col_ref.document(f"{document_name}")
+        return doc
+    
+    @staticmethod
+    def fetch_doc_info(db, col_ref, document_name):
         doc = db.document(f"{col_ref}/{document_name}").get().to_dict()
         return doc
 
@@ -54,3 +59,22 @@ class DataBaseMethods():
             return True
         else:
             return False
+        
+    @staticmethod
+    def delete_document(doc_ref):
+        try:
+            response = doc_ref.delete()
+            return response
+        except Exception as e:
+            print(f"Error deleting document: {e}")
+            return None
+        
+    @staticmethod
+    def gay():
+        db = DataBaseMethods.get_db()
+
+        # Create a reference to the document you want to delete
+        doc_ref = db.collection('Groups').document('bruhmoment')
+
+        # Call the delete() method on the DocumentReference object
+        doc_ref.delete()

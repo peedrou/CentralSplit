@@ -42,7 +42,7 @@ class User(AbstractUser):
             else:
                 DBM.add_new_info_to_document(empty_user, user_info)
                 print(f"User was created with UID: {doc_id}")
-                new_user = DBM.fetch_doc(db, "Users", doc_id)
+                new_user = DBM.fetch_doc_info(db, "Users", doc_id)
                 return new_user
 
         except Exception:
@@ -56,6 +56,15 @@ class User(AbstractUser):
         group = ITT.instantiate_group(userIDS=userIDS, groupName=groupName)
         response = group.handle_create_group()
         return response
+    
+    def delete_group(self, userIDS: None, groupName: str) -> bool:
+        group = ITT.instantiate_group(userIDS=userIDS, groupName=groupName)
+        try:
+            group.handle_delete_group()
+            return True
+        except Exception as e:
+            print(f"Error: {e}")
+            return False
 
     def add_users_to_group(self, userIDS: List[str], groupName: str):
         db = DBM.get_db()
