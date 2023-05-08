@@ -36,7 +36,7 @@ class User(AbstractUser):
             "totalToReceive":self.totalToReceive
         }
         try:
-            user_status = DBM.check_if_property_exists(db, "Users", "email", self.email)
+            user_status = DBM.check_if_property_exists_in_collection(db, "Users", "email", self.email)
             if user_status == True:
                 raise Exception("User already exists")
             else:

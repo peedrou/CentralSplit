@@ -53,13 +53,43 @@ class DataBaseMethods():
         doc_ref.update(data)
 
     @staticmethod
-    def check_if_property_exists(db, collection_name: str, key: str, value: str) -> bool:
+    def check_if_property_exists_in_collection(db, collection_name: str, key: str, value: str) -> bool:
         docs = db.collection(collection_name).where(key, "==", value).get()
         if len(docs) > 0:
             return True
         else:
+            docs = db.collection(collection_name).where(key, "array_contains", value).get()
+            if len(docs) > 0:
+                return True
+            else:
+                return False
+        
+    @staticmethod
+    def check_if_property_exists_in_document(db, collection_name: str, document_name: str, key: str, value: str) -> bool:
+        doc = DataBaseMethods.check_if_document_exists_and_return_doc(db, collection_name, document_name)
+
+        doc_data = doc.to_dict()
+
+        if key not in doc_data:
+            return False
+
+        if value in doc_data[key]:
+            return True
+        else:
             return False
         
+    @staticmethod
+    def check_if_properties_exist_in_document(db, collection_name: str, document_name: str, properties: dict) -> bool:
+        doc = DataBaseMethods.check_if_document_exists_and_return_doc(db, collection_name, document_name)
+
+        doc_data = doc.to_dict()
+
+        for key, value in properties.items():
+            if key not in doc_data or value not in doc_data[key]:
+                return False
+
+        return True
+     
     @staticmethod
     def delete_document(doc_ref):
         try:
@@ -70,11 +100,11 @@ class DataBaseMethods():
             return None
         
     @staticmethod
-    def gay():
-        db = DataBaseMethods.get_db()
+    def check_if_document_exists_and_return_doc(db, collection_name: str, document_name: str):
+        doc_ref = db.collection(collection_name).document(document_name)
+        doc = doc_ref.get()
 
-        # Create a reference to the document you want to delete
-        doc_ref = db.collection('Groups').document('bruhmoment')
-
-        # Call the delete() method on the DocumentReference object
-        doc_ref.delete()
+        if doc.exists:
+            return doc
+        else:
+            raise Exception("Document does not exist")

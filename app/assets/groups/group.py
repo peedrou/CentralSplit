@@ -49,7 +49,20 @@ class Group(AbstractGroup):
             raise Exception("Group does not exist")
 
     def handle_add_users_to_group(self):
-        pass
+        groupName, db, check_group = self.get_group_query("groupName")
+
+        if check_group == True:
+            try:
+                pass
+                # group_collection = DBM.get_collection(db, "Groups")
+                # doc_ref = DBM.fetch_doc(group_collection, groupName)
+                # check_users
+                
+                # return response
+            except:
+                raise Exception("User/s could not be added")
+        else:
+            raise Exception("Group does not exist")
 
     def handle_remove_users_from_group(self):
         pass
@@ -58,5 +71,12 @@ class Group(AbstractGroup):
         groupName = self.groupName
 
         db = DBM.get_db()
-        check_group = DBM.check_if_property_exists(db, "Groups", property, groupName)
+        check_group = DBM.check_if_property_exists_in_collection(db, "Groups", property, groupName)
         return groupName,db,check_group
+    
+    def check_if_users_exists_in_group(self, users: List[str]):
+        groupName = self.groupName
+
+        db = DBM.get_db()
+        check_user = DBM.check_if_property_exists(db, "Groups", property, groupName)
+        return groupName

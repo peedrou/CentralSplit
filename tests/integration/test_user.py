@@ -3,7 +3,6 @@ import pytest
 
 from dotenv import load_dotenv
 from app.assets.users.user import User
-from app.data.db_methods import DataBaseMethods as DBM
 
 load_dotenv()
 

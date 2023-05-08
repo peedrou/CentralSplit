@@ -1,18 +1,31 @@
-import os
 from dotenv import load_dotenv
 from google.cloud import firestore as fs
+from app.data.db_methods import DataBaseMethods as DBM
 
 load_dotenv()
 
 class TestDatabaseAccessIntegration():
 
     def test_db_access(self):
-        credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-        db = fs.Client.from_service_account_json(credentials_path)
-        doc_ref = db.collection("new collection").document()
-        doc_ref.set({
-            "name": "John Doe",
-            "email": "johndoe@example.com"
-        })
-        bruh = 1 + 1
-        assert bruh == 2
+        db = DBM.get_db()
+        assert isinstance(db, fs.Client)
+
+    def test_if_list_property_exists_in_document(self):
+        db = DBM.get_db()
+        response = DBM.check_if_property_exists_in_document(db, "Groups", "Test Group 2", "members", "user2")
+        assert response == True
+
+    def test_if_non_list_property_exists_in_document(self):
+        db = DBM.get_db()
+        response = DBM.check_if_property_exists_in_document(db, "Groups", "Test Group 2", "groupName", "Test Group 2")
+        assert response == True
+
+    def test_if_properties_exist_in_document(self):
+        db = DBM.get_db()
+        properties = {
+            'members':'user1',
+            'members':'user2',
+            'members':'user3',
+        }
+        response = DBM.check_if_properties_exist_in_document(db, "Groups", "Test Group 2", properties)
+        assert response == True
