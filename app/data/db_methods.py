@@ -19,7 +19,7 @@ class DataBaseMethods():
         return col_ref
     
     @staticmethod
-    def create_empty_document(col_ref):
+    def create_empty_document(col_ref: fs.CollectionReference):
         doc_ref = col_ref.document()
         return doc_ref
     
@@ -63,6 +63,23 @@ class DataBaseMethods():
                 return True
             else:
                 return False
+            
+    @staticmethod
+    def check_if_properties_exist_in_collection(db, collection_name: str, properties: dict) -> bool:
+        collection_ref = db.collection(collection_name)
+        docs = collection_ref.get()
+
+        for doc in docs:
+            doc_data = doc.to_dict()
+            found_all_properties = True
+            for key, value in properties.items():
+                if key not in doc_data or value not in doc_data[key]:
+                    found_all_properties = False
+                    break
+            if found_all_properties:
+                return True
+        
+        return False
         
     @staticmethod
     def check_if_property_exists_in_document(db, collection_name: str, document_name: str, key: str, value: str) -> bool:
