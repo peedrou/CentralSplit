@@ -96,16 +96,20 @@ class DataBaseMethods():
             return False
         
     @staticmethod
-    def check_if_properties_exist_in_document(db, collection_name: str, document_name: str, properties: dict) -> bool:
+    def check_if_properties_exist_in_document(db, collection_name: str, document_name: str, properties: tuple) -> bool:
         doc = DataBaseMethods.check_if_document_exists_and_return_doc(db, collection_name, document_name)
+        properties_found = []
+        properties_not_found = []
 
         doc_data = doc.to_dict()
 
-        for key, value in properties.items():
+        for key, value in properties:
             if key not in doc_data or value not in doc_data[key]:
-                return False
+                properties_not_found.append(value)
+            else:
+                properties_found.append(value)
 
-        return True
+        return properties_found, properties_not_found
      
     @staticmethod
     def delete_document(doc_ref):

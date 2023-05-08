@@ -96,14 +96,11 @@ class TestDatabaseAccessIntegration():
 
     def test_if_properties_exist_in_document(self):
         db = DBM.get_db()
-        properties = {
-            'members':'user1',
-            'members':'user2',
-            'members':'user3',
-        }
-        response = DBM.check_if_properties_exist_in_document(db, "Groups", "Test Group 2", properties)
+        properties = [ ('members', 'user1'), ('members', 'user2'), ('members', 'user3')]
+        properties_found, properties_not_found = DBM.check_if_properties_exist_in_document(db, "Groups", "Test Group 2", properties)
 
-        assert response == True
+        assert properties_found == ['user1','user2','user3']
+        assert properties_not_found == []
 
     def test_if_property_exists_in_collection(self):
         db = DBM.get_db()

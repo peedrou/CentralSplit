@@ -48,17 +48,23 @@ class Group(AbstractGroup):
         else:
             raise Exception("Group does not exist")
 
-    def handle_add_users_to_group(self):
+    def handle_add_users_to_group(self, users: List[str]):
         groupName, db, check_group = self.get_group_query("groupName")
+        col_ref = DBM.get_collection(db, "Groups")
+        doc_ref = DBM.fetch_doc(col_ref, groupName)
 
         if check_group == True:
             try:
-                pass
-                # group_collection = DBM.get_collection(db, "Groups")
-                # doc_ref = DBM.fetch_doc(group_collection, groupName)
-                # check_users
+                users_added = []
+                users_found, users_not_found = self.check_if_users_exists_in_group(users)
+                for user in users_not_found:
+                    DBM.update_document_attribute(doc_ref, {'members':user})
+                    users_added.append(user)
+                    print(f"User {user} was added to group {groupName}")
+                for user in users_found:
+                    print(f"User {user} already exists")
                 
-                # return response
+                return users_added
             except:
                 raise Exception("User/s could not be added")
         else:
@@ -76,7 +82,16 @@ class Group(AbstractGroup):
     
     def check_if_users_exists_in_group(self, users: List[str]):
         groupName = self.groupName
+        properties = self.parse_users_into_dict(users)
 
         db = DBM.get_db()
-        check_user = DBM.check_if_property_exists(db, "Groups", property, groupName)
-        return groupName
+        properties_found, properties_not_found = DBM.check_if_properties_exist_in_document(db, "Groups", groupName, properties)
+        return properties_found, properties_not_found
+
+    def parse_users_into_dict(self, users) -> List[tuple]:
+        properties = []
+
+        for user in users:
+            new_tuple = ('members', user)
+            properties.append(new_tuple)
+        return properties

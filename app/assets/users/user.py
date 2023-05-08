@@ -66,8 +66,13 @@ class User(AbstractUser):
             print(f"Error: {e}")
             return False
 
-    def add_users_to_group(self, userIDS: List[str], groupName: str):
-        db = DBM.get_db()
+    def add_users_to_group(self, userIDS: None, usersToAdd: List[str], groupName: str):
+        group = ITT.instantiate_group(userIDS=userIDS, groupName=groupName)
+        try:
+            users_added = group.handle_add_users_to_group(usersToAdd)
+            return users_added
+        except Exception as e:
+            print(f"Error: {e}")
 
     def remove_users_from_group(self, userIDS: List[str], groupName: str):
         db = DBM.get_db()

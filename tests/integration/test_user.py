@@ -124,3 +124,23 @@ class TestUser():
         response = user.delete_group(userIDS=None, groupName=groupName)
 
         assert response == True
+
+    def test_add_users_to_group(self):
+        user = User(
+            email='test@gmail.com',
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+
+        members = ['user1','user2','user3']
+        groupName = self._make_random_group_name()
+        user.create_group(userIDS=members, groupName=groupName)
+
+        response = user.add_users_to_group(None, ['user2', 'user4', 'user5'], groupName)
+
+        assert response == ['user4', 'user5']
