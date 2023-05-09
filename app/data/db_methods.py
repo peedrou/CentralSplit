@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from google.cloud import firestore as fs
-from typing import Dict
+from typing import Dict, List
 
 load_dotenv()
 
@@ -30,8 +30,11 @@ class DataBaseMethods():
     
     @staticmethod
     def add_new_info_to_document(doc_ref, data: Dict[str, any]):
-        response = doc_ref.set(data)
-        return response
+        try:
+            response = doc_ref.set(data)
+            return response
+        except Exception as e:
+            print(f"Error: {e}")
 
     @staticmethod
     def fetch_doc_id(doc_ref):
@@ -52,7 +55,10 @@ class DataBaseMethods():
     def update_document_array_attribute(doc_ref, data: Dict[str, str]):
         field_name = list(data.keys())[0]
         data[field_name] = fs.ArrayUnion([data[field_name]])
-        doc_ref.update(data)
+        try:
+            doc_ref.update(data)
+        except Exception as e:
+            print(f"Error: {e}")
 
     @staticmethod
     def remove_document_array_attribute(doc_ref, data: Dict[str, str]):
@@ -61,8 +67,11 @@ class DataBaseMethods():
         doc_ref.update(data)
 
     @staticmethod
-    def update_document_non_array_attribute(doc_ref, data: Dict[str, str]):
-        doc_ref.update(data)
+    def update_document_non_array_attribute(doc_ref, data: Dict[str, any]):
+        try:
+            doc_ref.update(data)
+        except Exception as e:
+            print(f"Error: {e}")
 
     @staticmethod
     def remove_document_non_array_attribute(doc_ref, data: Dict[str, str]):
@@ -81,6 +90,26 @@ class DataBaseMethods():
                 return True
             else:
                 return False
+            
+    @staticmethod
+    def check_if_property_exists_in_collection_and_return_doc(db, collection_name: str, key: str, value: str) -> List[fs.DocumentReference]:
+        docs = db.collection(collection_name).where(key, "==", value).get() 
+        doc_list = []
+        if len(docs) > 0:
+            for doc in docs:
+                doc_ref = doc.reference
+                doc_list.append(doc_ref)
+            return doc_list
+        else:
+            docs = db.collection(collection_name).where(key, "array_contains", value).get()
+            if len(docs) > 0:
+                for doc in docs:
+                    doc_ref = doc.reference
+                    doc_list.append(doc_ref)
+                    return doc_list
+            else:
+                return None
+
             
     @staticmethod
     def check_if_properties_exist_in_collection(db, collection_name: str, properties: dict) -> bool:
@@ -104,6 +133,21 @@ class DataBaseMethods():
         doc = DataBaseMethods.check_if_document_exists_and_return_doc(db, collection_name, document_name)
 
         doc_data = doc.to_dict()
+
+        if key not in doc_data:
+            return False
+
+        if value in doc_data[key]:
+            return True
+        else:
+            return False
+        
+    @staticmethod
+    def check_if_property_exists_in_document_with_doc_ref(doc_ref, key: str, value: str) -> bool:
+        if doc_ref is dict:
+            doc_data = doc_ref.to_dict()
+        else:
+            doc_data = doc_ref
 
         if key not in doc_data:
             return False

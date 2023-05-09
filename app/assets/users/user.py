@@ -78,16 +78,21 @@ class User(AbstractUser):
         except Exception as e:
             print(f"Error: {e}")
 
+    def add_friend(self, friendEmail: str):
+        friend = ITT.instantiate_friend(friendEmail, self.email)
+        try:
+            friend_added = friend.handle_add_friend()
+            return friend_added
+        except Exception as e:
+            print(f"Error: {e}")
+
+    def remove_friend(self, userID: str):
+        db = DBM.get_db()
+
     def create_expense(self, payers: List[str] | str, receivers: List[str] | str, amount: float):
         db = DBM.get_db()
 
     def check_total_balance(self):
-        db = DBM.get_db()
-
-    def add_friend(self, userID: str):
-        db = DBM.get_db()
-
-    def remove_friend(self, userID: str):
         db = DBM.get_db()
 
     def pay_user(self, userID: str, amount: float):

@@ -164,3 +164,33 @@ class TestUser():
         response = user.remove_users_from_group(None, ['user4', 'user2', 'user8'], groupName)
 
         assert response == ['user2']
+
+    def test_add_friend(self):
+        user1 = User(
+            email=self._make_random_email(),
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+
+        user2 = User(
+            email=self._make_random_email(),
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+
+        user1.register_user()
+        user2.register_user()
+
+        response = user1.add_friend(user2.email)
+
+        assert response == True
