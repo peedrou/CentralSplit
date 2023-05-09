@@ -1,4 +1,4 @@
-import random
+import random, pytest
 from dotenv import load_dotenv
 from google.cloud import firestore as fs
 from app.data.db_methods import DataBaseMethods as DBM
@@ -67,7 +67,7 @@ class TestDatabaseAccessIntegration():
 
         assert deleted_doc is not None
 
-    def test_update_document_attribute(self):
+    def test_update_document_add_non_array_attribute(self):
         random_name = self._make_random_name()
         info = {'test_key':'test value'}
 
@@ -76,11 +76,28 @@ class TestDatabaseAccessIntegration():
         doc_creation = DBM.create_document_with_title(col_ref, random_name)
         DBM.add_new_info_to_document(doc_creation, info)
         doc = DBM.fetch_doc(col_ref, random_name)
-        DBM.update_document_attribute(doc, {'test_key':'new value'})
+        DBM.update_document_non_array_attribute(doc, {'test_key':'new value'})
 
         doc_with_new_info = DBM.fetch_doc_info(db, "TestCollection", random_name)
         
         assert doc_with_new_info["test_key"] == "new value"
+
+    def test_update_document_remove_non_array_attribute(self):
+        random_name = self._make_random_name()
+        info = {'test_key':'test value'}
+
+        db = DBM.get_db()
+        col_ref = DBM.get_collection(db, "TestCollection")
+        doc_creation = DBM.create_document_with_title(col_ref, random_name)
+        DBM.add_new_info_to_document(doc_creation, info)
+        doc = DBM.fetch_doc(col_ref, random_name)
+        DBM.remove_document_non_array_attribute(doc, {'test_key':'new value'})
+
+        doc_with_new_info = DBM.fetch_doc_info(db, "TestCollection", random_name)
+        
+        with pytest.raises(Exception) as e:
+            doc_with_new_info["test_key"]
+        assert str(e.typename) == "KeyError"
 
     def test_if_list_property_exists_in_document(self):
         db = DBM.get_db()

@@ -49,7 +49,25 @@ class DataBaseMethods():
         return doc
 
     @staticmethod
-    def update_document_attribute(doc_ref, data: Dict[str, str]):
+    def update_document_array_attribute(doc_ref, data: Dict[str, str]):
+        field_name = list(data.keys())[0]
+        data[field_name] = fs.ArrayUnion([data[field_name]])
+        doc_ref.update(data)
+
+    @staticmethod
+    def remove_document_array_attribute(doc_ref, data: Dict[str, str]):
+        field_name = list(data.keys())[0]
+        data[field_name] = fs.ArrayRemove([data[field_name]])
+        doc_ref.update(data)
+
+    @staticmethod
+    def update_document_non_array_attribute(doc_ref, data: Dict[str, str]):
+        doc_ref.update(data)
+
+    @staticmethod
+    def remove_document_non_array_attribute(doc_ref, data: Dict[str, str]):
+        field_name = list(data.keys())[0]
+        data[field_name] = fs.DELETE_FIELD
         doc_ref.update(data)
 
     @staticmethod

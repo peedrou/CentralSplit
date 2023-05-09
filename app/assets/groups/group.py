@@ -58,20 +58,39 @@ class Group(AbstractGroup):
                 users_added = []
                 users_found, users_not_found = self.check_if_users_exists_in_group(users)
                 for user in users_not_found:
-                    DBM.update_document_attribute(doc_ref, {'members':user})
+                    DBM.update_document_array_attribute(doc_ref, {'members':user})
                     users_added.append(user)
                     print(f"User {user} was added to group {groupName}")
                 for user in users_found:
                     print(f"User {user} already exists")
                 
                 return users_added
-            except:
-                raise Exception("User/s could not be added")
+            except Exception as e:
+                print(f"User/s could not be added: {e}")
         else:
             raise Exception("Group does not exist")
 
-    def handle_remove_users_from_group(self):
-        pass
+    def handle_remove_users_from_group(self, users: List[str]):
+        groupName, db, check_group = self.get_group_query("groupName")
+        col_ref = DBM.get_collection(db, "Groups")
+        doc_ref = DBM.fetch_doc(col_ref, groupName)
+
+        if check_group == True:
+            try:
+                users_removed = []
+                users_found, users_not_found = self.check_if_users_exists_in_group(users)
+                for user in users_not_found:
+                    print(f"User {user} is not in group {groupName}")
+                for user in users_found:
+                    DBM.remove_document_array_attribute(doc_ref, {'members':user})
+                    users_removed.append(user)
+                    print(f"User {user} was removed from group {groupName}")
+                
+                return users_removed
+            except Exception as e:
+                print(f"User/s could not be removed: {e}")
+        else:
+            raise Exception("Group does not exist")
 
     def get_group_query(self, property: str):
         groupName = self.groupName

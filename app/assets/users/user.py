@@ -48,10 +48,6 @@ class User(AbstractUser):
         except Exception:
             raise Exception("User already exists")
 
-
-    def pay_user(self, userID: str, amount: float):
-        db = DBM.get_db()
-
     def create_group(self, userIDS: List[str], groupName: str):
         group = ITT.instantiate_group(userIDS=userIDS, groupName=groupName)
         response = group.handle_create_group()
@@ -74,8 +70,13 @@ class User(AbstractUser):
         except Exception as e:
             print(f"Error: {e}")
 
-    def remove_users_from_group(self, userIDS: List[str], groupName: str):
-        db = DBM.get_db()
+    def remove_users_from_group(self, userIDS: None, usersToRemove: List[str], groupName: str):
+        group = ITT.instantiate_group(userIDS=userIDS, groupName=groupName)
+        try:
+            users_removed = group.handle_remove_users_from_group(usersToRemove)
+            return users_removed
+        except Exception as e:
+            print(f"Error: {e}")
 
     def create_expense(self, payers: List[str] | str, receivers: List[str] | str, amount: float):
         db = DBM.get_db()
@@ -87,6 +88,9 @@ class User(AbstractUser):
         db = DBM.get_db()
 
     def remove_friend(self, userID: str):
+        db = DBM.get_db()
+
+    def pay_user(self, userID: str, amount: float):
         db = DBM.get_db()
 
     def get_payment(self, userID: str, amount: float):
