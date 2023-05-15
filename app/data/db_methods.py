@@ -158,6 +158,15 @@ class DataBaseMethods():
             return False
         
     @staticmethod
+    def check_if_property_exists_in_document_with_doc_ref_and_return_value(doc_ref, key: str) -> any:
+        doc_data = doc_ref.get().to_dict()
+
+        if key not in doc_data:
+            return False
+        else:
+            return doc_data[key]
+        
+    @staticmethod
     def check_if_properties_exist_in_document(db, collection_name: str, document_name: str, properties: tuple) -> bool:
         doc = DataBaseMethods.check_if_document_exists_and_return_doc(db, collection_name, document_name)
         properties_found = []

@@ -32,7 +32,15 @@ class Friend(AbstractFriend):
             return True
 
     def handle_check_debt_with_friend(self):
-        pass
+        friend_doc, user_doc, check_if_already_friend = self.fetch_friend_and_user_docs_and_check_if_already_friends()
+        if check_if_already_friend == False:
+            raise Exception("Users are not friends")
+        else:
+            userEmailWithoutHandle, friendEmailWithoutHandle = self.remove_email_handle()
+            money_owed = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(friend_doc, f'moneyFROM{userEmailWithoutHandle}')
+            money_to_receive = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(friend_doc, f'moneyTO{userEmailWithoutHandle}')
+            return money_owed, money_to_receive
+
 
     def fetch_user_and_friend_doc(self, db):
         friend_docs = DBM.check_if_property_exists_in_collection_and_return_doc(db, 'Users', "email", self.friendEmail)

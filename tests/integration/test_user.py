@@ -225,3 +225,35 @@ class TestUser():
         response = user1.remove_friend(user2.email)
 
         assert response == True
+
+    def test_check_debt_with_friend(self):
+        user1 = User(
+            email=self._make_random_email(),
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+
+        user2 = User(
+            email=self._make_random_email(),
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+
+        user1.register_user()
+        user2.register_user()
+        user1.add_friend(user2.email)
+
+        money_owed_message, money_to_receive_message = user1.check_debt_with_friend(user2.email)
+
+        assert money_owed_message == f'You must pay 0'
+        assert money_to_receive_message == f'You must receive 0'
