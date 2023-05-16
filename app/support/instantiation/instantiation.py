@@ -14,6 +14,6 @@ class Instantiation():
         return instantiatedGroup
     
     @staticmethod
-    def instantiate_friend(friendEmail: str, userEmail: str):
-        instantiatedFriend = Friend(friendEmail=friendEmail, userEmail=userEmail, totalToPay= 0, totalToReceive= 0)
+    def instantiate_friend(friendEmail: str, userEmail: str, userUsername: str, friendUsername: str):
+        instantiatedFriend = Friend(friendEmail=friendEmail, userEmail=userEmail, userUsername=userUsername, friendUsername=friendUsername, totalToPay= 0, totalToReceive= 0)
         return instantiatedFriend

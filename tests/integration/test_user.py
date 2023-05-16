@@ -15,6 +15,11 @@ class TestUser():
         email = random_string + '@gmail.com'
         return email
     
+    def _make_random_username(self) -> str:
+        my_string = "abcdefghijklmnopqrstuvwxyz"
+        username = ''.join(random.choices(my_string, k=10))
+        return username
+    
     def _make_random_group_name(self) -> str:
         my_string = "abcdefghijklmnopqrstuvwxyz"
         random_string = ''.join(random.choices(my_string, k=10))
@@ -24,6 +29,7 @@ class TestUser():
     def test_register_user(self):
         user = User(
             email=self._make_random_email(),
+            username=self._make_random_username(),
             UID="",
             groups=[],
             friends=[],
@@ -37,6 +43,7 @@ class TestUser():
 
         user_info = {
             "email":f"{user.email}",
+            "username":f"{user.username}",
             "UID":f'{response["UID"]}',
             "groups":user.groups,
             "friends":user.friends,
@@ -51,6 +58,7 @@ class TestUser():
     def test_if_user_exists(self):
         user = User(
             email='test@gmail.com',
+            username=self._make_random_username(),
             UID="",
             groups=[],
             friends=[],
@@ -67,6 +75,7 @@ class TestUser():
     def test_create_group(self):
         user = User(
             email='test@gmail.com',
+            username=self._make_random_username(),
             UID="",
             groups=[],
             friends=[],
@@ -90,6 +99,7 @@ class TestUser():
     def test_group_exists(self):
         user = User(
             email='test@gmail.com',
+            username=self._make_random_username(),
             UID="",
             groups=[],
             friends=[],
@@ -108,6 +118,7 @@ class TestUser():
     def test_delete_group(self):
         user = User(
             email='test@gmail.com',
+            username=self._make_random_username(),
             UID="",
             groups=[],
             friends=[],
@@ -128,6 +139,7 @@ class TestUser():
     def test_add_users_to_group(self):
         user = User(
             email='test@gmail.com',
+            username=self._make_random_username(),
             UID="",
             groups=[],
             friends=[],
@@ -148,6 +160,7 @@ class TestUser():
     def test_remove_users_from_group(self):
         user = User(
             email='test@gmail.com',
+            username=self._make_random_username(),
             UID="",
             groups=[],
             friends=[],
@@ -168,6 +181,7 @@ class TestUser():
     def test_add_friend(self):
         user1 = User(
             email=self._make_random_email(),
+            username=self._make_random_username(),
             UID="",
             groups=[],
             friends=[],
@@ -179,6 +193,7 @@ class TestUser():
 
         user2 = User(
             email=self._make_random_email(),
+            username=self._make_random_username(),
             UID="",
             groups=[],
             friends=[],
@@ -191,13 +206,14 @@ class TestUser():
         user1.register_user()
         user2.register_user()
 
-        response = user1.add_friend(user2.email)
+        response = user1.add_friend(user2.email, user2.username)
 
         assert response == True
 
     def test_remove_friend(self):
         user1 = User(
             email=self._make_random_email(),
+            username=self._make_random_username(),
             UID="",
             groups=[],
             friends=[],
@@ -209,6 +225,7 @@ class TestUser():
 
         user2 = User(
             email=self._make_random_email(),
+            username=self._make_random_username(),
             UID="",
             groups=[],
             friends=[],
@@ -220,15 +237,16 @@ class TestUser():
 
         user1.register_user()
         user2.register_user()
-        user1.add_friend(user2.email)
+        user1.add_friend(user2.email, user2.username)
 
-        response = user1.remove_friend(user2.email)
+        response = user1.remove_friend(user2.email, user2.username)
 
         assert response == True
 
     def test_check_debt_with_friend(self):
         user1 = User(
             email=self._make_random_email(),
+            username=self._make_random_username(),
             UID="",
             groups=[],
             friends=[],
@@ -240,6 +258,7 @@ class TestUser():
 
         user2 = User(
             email=self._make_random_email(),
+            username=self._make_random_username(),
             UID="",
             groups=[],
             friends=[],
@@ -251,9 +270,9 @@ class TestUser():
 
         user1.register_user()
         user2.register_user()
-        user1.add_friend(user2.email)
+        user1.add_friend(user2.email, user2.username)
 
-        money_owed_message, money_to_receive_message = user1.check_debt_with_friend(user2.email)
+        money_owed_message, money_to_receive_message = user1.check_debt_with_friend(user2.email, user2.username)
 
         assert money_owed_message == f'You must pay 0'
         assert money_to_receive_message == f'You must receive 0'

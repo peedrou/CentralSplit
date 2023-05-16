@@ -5,6 +5,8 @@ from dataclasses import dataclass
 class AbstractFriend(ABC):
     userEmail: str
     friendEmail: str
+    userUsername: str
+    friendUsername: str
     totalToPay: float
     totalToReceive: float
 

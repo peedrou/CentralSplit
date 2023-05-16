@@ -5,6 +5,7 @@ from typing import List, Dict
 @dataclass
 class AbstractUser(ABC):
     email: str
+    username: str
     UID: str
     groups: List[str]
     friends: List[str]

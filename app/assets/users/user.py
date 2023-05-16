@@ -11,6 +11,7 @@ load_dotenv()
 @dataclass
 class User(AbstractUser):
     email: str
+    username: str
     UID: str
     groups: List[str]
     friends: List[str]
@@ -27,6 +28,7 @@ class User(AbstractUser):
 
         user_info = {
             "email":f"{self.email}",
+            "username": f"{self.username}",
             "UID":f"{doc_id}",
             "groups":self.groups,
             "friends":self.friends,
@@ -78,16 +80,16 @@ class User(AbstractUser):
         except Exception as e:
             print(f"Error: {e}")
 
-    def add_friend(self, friendEmail: str):
-        friend = ITT.instantiate_friend(friendEmail, self.email)
+    def add_friend(self, friendEmail: str, friendUsername: str):
+        friend = ITT.instantiate_friend(friendEmail, self.email, self.username, friendUsername)
         try:
             friend_added = friend.handle_add_friend()
             return friend_added
         except Exception as e:
             print(f"Error: {e}")
 
-    def remove_friend(self, friendEmail: str):
-        friend = ITT.instantiate_friend(friendEmail, self.email)
+    def remove_friend(self, friendEmail: str, friendUsername: str):
+        friend = ITT.instantiate_friend(friendEmail, self.email, self.username, friendUsername)
         try:
             friend_removed = friend.handle_remove_friend()
             return friend_removed
@@ -106,8 +108,8 @@ class User(AbstractUser):
     def get_payment(self, userID: str, amount: float):
         db = DBM.get_db()
 
-    def check_debt_with_friend(self, friendEmail: str):
-        friend = ITT.instantiate_friend(friendEmail, self.email)
+    def check_debt_with_friend(self, friendEmail: str, friendUsername: str):
+        friend = ITT.instantiate_friend(friendEmail, self.email, self.username, friendUsername)
         money_owed, money_to_receive = friend.handle_check_debt_with_friend()
 
         money_owed_message = f'You must pay {money_owed}'

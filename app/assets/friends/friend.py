@@ -10,6 +10,8 @@ from app.support.abstracts.friend import AbstractFriend
 class Friend(AbstractFriend):
     userEmail: str
     friendEmail: str
+    userUsername: str
+    friendUsername: str
     totalToPay: float
     totalToReceive: float
 
@@ -36,9 +38,8 @@ class Friend(AbstractFriend):
         if check_if_already_friend == False:
             raise Exception("Users are not friends")
         else:
-            userEmailWithoutHandle, friendEmailWithoutHandle = self.remove_email_handle()
-            money_owed = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(friend_doc, f'moneyFROM{userEmailWithoutHandle}')
-            money_to_receive = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(friend_doc, f'moneyTO{userEmailWithoutHandle}')
+            money_owed = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(friend_doc, f'moneyFROM{self.userUsername}')
+            money_to_receive = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(friend_doc, f'moneyTO{self.userUsername}')
             return money_owed, money_to_receive
 
 
@@ -56,26 +57,18 @@ class Friend(AbstractFriend):
         DBM.remove_document_array_attribute(user_doc, {'friends': self.friendEmail})
 
     def add_initial_expenses(self, friend_doc, user_doc):
-        userEmailWithoutHandle, friendEmailWithoutHandle = self.remove_email_handle()
 
-        DBM.update_document_non_array_attribute(friend_doc, {f'moneyFROM{userEmailWithoutHandle}': 0})
-        DBM.update_document_non_array_attribute(friend_doc, {f'moneyTO{userEmailWithoutHandle}': 0})
-        DBM.update_document_non_array_attribute(user_doc, {f'moneyFROM{friendEmailWithoutHandle}': 0})
-        DBM.update_document_non_array_attribute(user_doc, {f'moneyTO{friendEmailWithoutHandle}': 0})
+        DBM.update_document_non_array_attribute(friend_doc, {f'moneyFROM{self.userUsername}': 0})
+        DBM.update_document_non_array_attribute(friend_doc, {f'moneyTO{self.userUsername}': 0})
+        DBM.update_document_non_array_attribute(user_doc, {f'moneyFROM{self.friendUsername}': 0})
+        DBM.update_document_non_array_attribute(user_doc, {f'moneyTO{self.friendUsername}': 0})
 
     def remove_expenses_with_each_other(self, friend_doc, user_doc):
-        userEmailWithoutHandle, friendEmailWithoutHandle = self.remove_email_handle()
 
-        DBM.remove_document_non_array_attribute(friend_doc, {f'moneyFROM{userEmailWithoutHandle}': 0})
-        DBM.remove_document_non_array_attribute(friend_doc, {f'moneyTO{userEmailWithoutHandle}': 0})
-        DBM.remove_document_non_array_attribute(user_doc, {f'moneyFROM{friendEmailWithoutHandle}': 0})
-        DBM.remove_document_non_array_attribute(user_doc, {f'moneyTO{friendEmailWithoutHandle}': 0})
-
-    def remove_email_handle(self):
-        userEmailWithoutHandle = self.userEmail.split("@")[0]
-        friendEmailWithoutHandle = self.friendEmail.split("@")[0]
-
-        return userEmailWithoutHandle, friendEmailWithoutHandle
+        DBM.remove_document_non_array_attribute(friend_doc, {f'moneyFROM{self.userUsername}': 0})
+        DBM.remove_document_non_array_attribute(friend_doc, {f'moneyTO{self.userUsername}': 0})
+        DBM.remove_document_non_array_attribute(user_doc, {f'moneyFROM{self.friendUsername}': 0})
+        DBM.remove_document_non_array_attribute(user_doc, {f'moneyTO{self.friendUsername}': 0})
 
     def fetch_friend_and_user_docs_and_check_if_already_friends(self):
         db = DBM.get_db()
