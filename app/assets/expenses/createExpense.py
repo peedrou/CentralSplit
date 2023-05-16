@@ -1,32 +1,33 @@
-from abc import ABC, abstractmethod
+from app.support.abstracts.createExpense import AbstractCreateExpense
+
 from dataclasses import dataclass
 from typing import List
+from enum import Enum
+
+class SplitMethod(Enum):
+    EQUAL = "equal"
+    CUSTOM = "custom"
 
 @dataclass
-class AbstractCreateExpense(ABC):
+class CreateExpense(AbstractCreateExpense):
     amount: float
     payer: str
     receivers: List[str] | str
     group: str | None
-    splitMethod: any #to change
+    splitMethod: SplitMethod
 
 
-    @abstractmethod
     def handle_make_expense(self):
         pass
 
-    @abstractmethod
     def handle_add_expense_to_payer(self):
         pass
 
-    @abstractmethod
     def handle_add_expense_to_receivers_equal(self):
         pass
-    
-    @abstractmethod
-    def handle_add_expense_to_receivers_custom(self):
+
+    def handle_add_expense_to_receivers_custom(self, custom_amounts: List[float]):
         pass
 
-    @abstractmethod
     def handle_add_expense_to_group(self):
         pass

@@ -96,6 +96,17 @@ class User(AbstractUser):
         except Exception as e:
             print(f"Error: {e}")
 
+    def check_debt_with_friend(self, friendEmail: str, friendUsername: str):
+        friend = ITT.instantiate_friend(friendEmail, self.email, self.username, friendUsername)
+        money_owed, money_to_receive = friend.handle_check_debt_with_friend()
+
+        money_owed_message = f'You must pay {money_owed}'
+        money_to_receive_message = f'You must receive {money_to_receive}'
+        print(money_owed_message)
+        print(money_to_receive_message)
+
+        return money_owed_message, money_to_receive_message
+
     def create_expense(self, payers: List[str] | str, receivers: List[str] | str, amount: float):
         db = DBM.get_db()
 
@@ -108,16 +119,6 @@ class User(AbstractUser):
     def get_payment(self, userID: str, amount: float):
         db = DBM.get_db()
 
-    def check_debt_with_friend(self, friendEmail: str, friendUsername: str):
-        friend = ITT.instantiate_friend(friendEmail, self.email, self.username, friendUsername)
-        money_owed, money_to_receive = friend.handle_check_debt_with_friend()
-
-        money_owed_message = f'You must pay {money_owed}'
-        money_to_receive_message = f'You must receive {money_to_receive}'
-        print(money_owed_message)
-        print(money_to_receive_message)
-
-        return money_owed_message, money_to_receive_message
 
     
 
