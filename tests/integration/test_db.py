@@ -101,19 +101,28 @@ class TestDatabaseAccessIntegration():
 
     def test_if_list_property_exists_in_document(self):
         db = DBM.get_db()
+        col_ref = DBM.get_collection(db, "Groups")
+        doc_ref = DBM.create_document_with_title(col_ref, "Test Group 2")
+        DBM.add_new_info_to_document(doc_ref, {"members":["user2"]})
         response = DBM.check_if_property_exists_in_document(db, "Groups", "Test Group 2", "members", "user2")
 
         assert response == True
 
     def test_if_non_list_property_exists_in_document(self):
         db = DBM.get_db()
+        col_ref = DBM.get_collection(db, "Groups")
+        doc_ref = DBM.create_document_with_title(col_ref, "Test Group 2")
+        DBM.add_new_info_to_document(doc_ref, {"groupName":"Test Group 2"})
         response = DBM.check_if_property_exists_in_document(db, "Groups", "Test Group 2", "groupName", "Test Group 2")
 
         assert response == True
 
     def test_if_properties_exist_in_document(self):
         db = DBM.get_db()
-        properties = [ ('members', 'user1'), ('members', 'user2'), ('members', 'user3')]
+        properties = [('members', 'user1'), ('members', 'user2'), ('members', 'user3')]
+        col_ref = DBM.get_collection(db, "Groups")
+        doc_ref = DBM.create_document_with_title(col_ref, "Test Group 2")
+        DBM.add_new_info_to_document(doc_ref, properties)
         properties_found, properties_not_found = DBM.check_if_properties_exist_in_document(db, "Groups", "Test Group 2", properties)
 
         assert properties_found == ['user1','user2','user3']
@@ -121,6 +130,9 @@ class TestDatabaseAccessIntegration():
 
     def test_if_property_exists_in_collection(self):
         db = DBM.get_db()
+        col_ref = DBM.get_collection(db, "Groups")
+        doc_ref = DBM.create_document_with_title(col_ref, "Test Group 2")
+        DBM.add_new_info_to_document(doc_ref, {"groupName":"Test Group 2"})
         response = DBM.check_if_property_exists_in_collection(db, "Groups", "groupName", "Test Group 2")
 
         assert response == True

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Dict, Any
+from google.cloud import firestore as fs
 
 from app.data.db_methods import DataBaseMethods as DBM
 from dotenv import load_dotenv
@@ -13,7 +14,7 @@ class Group(AbstractGroup):
     groupName: str
     members: List[str] | None
 
-    def handle_create_group(self):
+    def handle_create_group(self) -> Dict[str, Any]:
         groupName, db, check_group = self.get_group_query("groupName")
 
         if check_group == True:
@@ -48,7 +49,7 @@ class Group(AbstractGroup):
         else:
             raise Exception("Group does not exist")
 
-    def handle_add_users_to_group(self, users: List[str]):
+    def handle_add_users_to_group(self, users: List[str]) -> List[str]:
         groupName, db, check_group = self.get_group_query("groupName")
         col_ref = DBM.get_collection(db, "Groups")
         doc_ref = DBM.fetch_doc(col_ref, groupName)
@@ -70,7 +71,7 @@ class Group(AbstractGroup):
         else:
             raise Exception("Group does not exist")
 
-    def handle_remove_users_from_group(self, users: List[str]):
+    def handle_remove_users_from_group(self, users: List[str]) -> List[str]:
         groupName, db, check_group = self.get_group_query("groupName")
         col_ref = DBM.get_collection(db, "Groups")
         doc_ref = DBM.fetch_doc(col_ref, groupName)
@@ -92,14 +93,14 @@ class Group(AbstractGroup):
         else:
             raise Exception("Group does not exist")
 
-    def get_group_query(self, property: str):
+    def get_group_query(self, property: str) -> Any:
         groupName = self.groupName
 
         db = DBM.get_db()
         check_group = DBM.check_if_property_exists_in_collection(db, "Groups", property, groupName)
         return groupName,db,check_group
     
-    def check_if_users_exists_in_group(self, users: List[str]):
+    def check_if_users_exists_in_group(self, users: List[str]) -> Any:
         groupName = self.groupName
         properties = self.parse_users_into_dict(users)
 

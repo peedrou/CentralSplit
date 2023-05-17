@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List, Dict, Any
 from app.data.db_methods import DataBaseMethods as DBM
 from app.support.instantiation.instantiation import Instantiation as ITT
 from app.assets.expenses.createExpense import SplitMethod
@@ -21,7 +21,7 @@ class User(AbstractUser):
     totalToPay: float
     totalToReceive: float
 
-    def register_user(self):
+    def register_user(self) -> Dict[str, Any]:
         db = DBM.get_db()
         user_collection = DBM.get_collection(db, "Users")
         empty_user = DBM.create_empty_document(user_collection)
@@ -51,7 +51,7 @@ class User(AbstractUser):
         except Exception:
             raise Exception("User already exists")
 
-    def create_group(self, userIDS: List[str], groupName: str):
+    def create_group(self, userIDS: List[str], groupName: str) -> Dict[str, Any]:
         group = ITT.instantiate_group(userIDS=userIDS, groupName=groupName)
         response = group.handle_create_group()
         return response
@@ -65,7 +65,7 @@ class User(AbstractUser):
             print(f"Error: {e}")
             return False
 
-    def add_users_to_group(self, userIDS: None, usersToAdd: List[str], groupName: str):
+    def add_users_to_group(self, userIDS: None, usersToAdd: List[str], groupName: str) -> list:
         group = ITT.instantiate_group(userIDS=userIDS, groupName=groupName)
         try:
             users_added = group.handle_add_users_to_group(usersToAdd)
@@ -73,7 +73,7 @@ class User(AbstractUser):
         except Exception as e:
             print(f"Error: {e}")
 
-    def remove_users_from_group(self, userIDS: None, usersToRemove: List[str], groupName: str):
+    def remove_users_from_group(self, userIDS: None, usersToRemove: List[str], groupName: str) -> list:
         group = ITT.instantiate_group(userIDS=userIDS, groupName=groupName)
         try:
             users_removed = group.handle_remove_users_from_group(usersToRemove)
@@ -81,7 +81,7 @@ class User(AbstractUser):
         except Exception as e:
             print(f"Error: {e}")
 
-    def add_friend(self, friendEmail: str, friendUsername: str):
+    def add_friend(self, friendEmail: str, friendUsername: str) -> bool:
         friend = ITT.instantiate_friend(friendEmail, self.email, self.username, friendUsername)
         try:
             friend_added = friend.handle_add_friend()
@@ -89,7 +89,7 @@ class User(AbstractUser):
         except Exception as e:
             print(f"Error: {e}")
 
-    def remove_friend(self, friendEmail: str, friendUsername: str):
+    def remove_friend(self, friendEmail: str, friendUsername: str) -> bool:
         friend = ITT.instantiate_friend(friendEmail, self.email, self.username, friendUsername)
         try:
             friend_removed = friend.handle_remove_friend()
@@ -97,7 +97,7 @@ class User(AbstractUser):
         except Exception as e:
             print(f"Error: {e}")
 
-    def check_debt_with_friend(self, friendEmail: str, friendUsername: str):
+    def check_debt_with_friend(self, friendEmail: str, friendUsername: str) -> str:
         friend = ITT.instantiate_friend(friendEmail, self.email, self.username, friendUsername)
         money_owed, money_to_receive = friend.handle_check_debt_with_friend()
 
@@ -108,7 +108,16 @@ class User(AbstractUser):
 
         return money_owed_message, money_to_receive_message
 
-    def create_expense(self, payer: str | str, receivers: List[str] | str, amount: float, group: str | None, split_method: SplitMethod, custom_amounts: List[float] | None):
+    def create_expense(
+            self,
+            payer: str | str,
+            receivers: List[str] | str,
+            amount: float,
+            group: str | None,
+            split_method: SplitMethod,
+            custom_amounts: List[float] | None
+        ) -> bool:
+
         new_expense = ITT.instantiate_create_expense(
             amount=amount,
             payer=payer,
