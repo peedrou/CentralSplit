@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import List, Dict
 from app.data.db_methods import DataBaseMethods as DBM
 from app.support.instantiation.instantiation import Instantiation as ITT
+from app.assets.expenses.createExpense import SplitMethod
 from dotenv import load_dotenv
 
 from app.support.abstracts.user import AbstractUser
@@ -107,8 +108,17 @@ class User(AbstractUser):
 
         return money_owed_message, money_to_receive_message
 
-    def create_expense(self, payers: List[str] | str, receivers: List[str] | str, amount: float):
-        db = DBM.get_db()
+    def create_expense(self, payer: str | str, receivers: List[str] | str, amount: float, group: str | None, split_method: SplitMethod, custom_amounts: List[float] | None):
+        new_expense = ITT.instantiate_create_expense(
+            amount=amount,
+            payer=payer,
+            receivers=receivers,
+            group=group,
+            customAmounts=custom_amounts,
+            splitMethod=split_method
+        )
+        new_expense.handle_make_expense()
+        return True
 
     def check_total_balance(self):
         db = DBM.get_db()

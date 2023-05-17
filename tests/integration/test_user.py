@@ -276,3 +276,95 @@ class TestUser():
 
         assert money_owed_message == f'You must pay 0'
         assert money_to_receive_message == f'You must receive 0'
+
+    def test_create_single_split_expense(self):
+        user1 = User(
+            email=self._make_random_email(),
+            username=self._make_random_username(),
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+
+        user2 = User(
+            email=self._make_random_email(),
+            username=self._make_random_username(),
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+
+        user1.register_user()
+        user2.register_user()
+
+        result = user1.create_expense(
+            payer=user1.username,
+            receivers=user2.username,
+            amount=100,
+            group=None,
+            custom_amounts=None,
+            split_method="single"
+        )
+
+        assert result == True
+    
+    def test_create_equal_split_expense(self):
+        user1 = User(
+            email=self._make_random_email(),
+            username=self._make_random_username(),
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+
+        user2 = User(
+            email=self._make_random_email(),
+            username=self._make_random_username(),
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+
+        user3 = User(
+            email=self._make_random_email(),
+            username=self._make_random_username(),
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+
+        user1.register_user()
+        user2.register_user()
+        user3.register_user()
+
+        result = user1.create_expense(
+            payer=user1.username,
+            receivers=[user2.username, user3.username],
+            amount=100,
+            group=None,
+            custom_amounts=[50,50],
+            split_method="equal"
+        )
+
+        assert result == True
+  
