@@ -367,4 +367,45 @@ class TestUser():
         )
 
         assert result == True
+
+    def test_check_balance(self):
+        user1 = User(
+            email=self._make_random_email(),
+            username=self._make_random_username(),
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+
+        user2 = User(
+            email=self._make_random_email(),
+            username=self._make_random_username(),
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+
+        user1.register_user()
+        user2.register_user()
+
+        user1.create_expense(
+            payer=user1.username,
+            receivers=[user2.username],
+            amount=100,
+            group=None,
+            custom_amounts=None,
+            split_method="single"
+        )
+
+        balance = user1.check_total_balance()
+
+        assert balance == -100
   

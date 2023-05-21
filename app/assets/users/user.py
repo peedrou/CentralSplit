@@ -126,17 +126,24 @@ class User(AbstractUser):
             customAmounts=custom_amounts,
             splitMethod=split_method
         )
+        
         new_expense.handle_make_expense()
+
         return True
 
-    def check_total_balance(self):
+    def check_total_balance(self) -> float | int:
         db = DBM.get_db()
+        user_doc = DBM.check_if_property_exists_in_collection_and_return_doc(db, "Users", "username", self.username)[0]
+        total_to_receive = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(user_doc, "totalToReceive")
+        total_to_pay = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(user_doc, "totalToPay")
+
+        balance = total_to_receive - total_to_pay
+        return balance
 
     def pay_user(self, userID: str, amount: float):
         db = DBM.get_db()
 
-    def get_payment(self, userID: str, amount: float):
-        db = DBM.get_db()
+    
 
 
     
