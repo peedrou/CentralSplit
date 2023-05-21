@@ -5,6 +5,7 @@ from app.assets.groups.group import Group
 from app.assets.friends.friend import Friend
 from app.assets.expenses.createExpense import CreateExpense
 from app.assets.expenses.createExpense import SplitMethod
+from app.assets.expenses.removeExpense import RemoveExpense
 
 load_dotenv()
 

@@ -5,9 +5,9 @@ from typing import List
 @dataclass
 class AbstractRemoveExpense(ABC):
     amount: float
-    payers: List[str] | str
+    payer: str
     receivers: List[str] | str
-    expense: any #to change
+    group: str | None
 
 
     @abstractmethod
@@ -28,4 +28,12 @@ class AbstractRemoveExpense(ABC):
 
     @abstractmethod
     def remove_expense_from_group(self):
+        pass
+    
+    @abstractmethod
+    def check_if_expense_exists(self):
+        pass
+
+    @abstractmethod
+    def check_if_expense_is_going_to_be_eliminated(self):
         pass
