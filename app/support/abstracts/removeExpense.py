@@ -11,19 +11,23 @@ class AbstractRemoveExpense(ABC):
 
 
     @abstractmethod
-    def remove_expense_amount(self):
+    def handle_remove_expense_amount(self):
         pass
 
     @abstractmethod
-    def eliminate_expense(self):
+    def eliminate_expense_from_payer(self):
         pass
 
     @abstractmethod
-    def remove_expense_from_payers(self):
+    def eliminate_expense_from_receiver(self):
         pass
 
     @abstractmethod
-    def remove_expense_from_receivers(self):
+    def remove_expense_from_payer(self):
+        pass
+
+    @abstractmethod
+    def remove_expense_from_receiver(self):
         pass
 
     @abstractmethod

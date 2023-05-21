@@ -26,6 +26,7 @@ class Group(AbstractGroup):
                 group_info = {
                     "groupName":f"{groupName}",
                     "members":self.members,
+                    "totalExpenses": 0
                 }
                 DBM.add_new_info_to_document(doc_ref, group_info)
                 print(f"Group was created with Name: {groupName}")

@@ -39,3 +39,19 @@ class Instantiation():
             splitMethod=splitMethod
         )
         return instantiatedNewExpense
+    
+    @staticmethod
+    def instantiate_remove_expense(
+            amount: float,
+            payer: str,
+            receivers: List[str] | str,
+            group: str | None
+        ):
+    
+        instantiatedRemoveExpense = CreateExpense(
+            amount=amount,
+            payer=payer,
+            receivers=receivers,
+            group=group
+        )
+        return instantiatedRemoveExpense

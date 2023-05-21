@@ -91,7 +91,8 @@ class TestUser():
 
         group_info = {
             'members': members, 
-            'groupName': groupName
+            'groupName': groupName,
+            'totalExpenses': 0
         }
 
         assert response == group_info

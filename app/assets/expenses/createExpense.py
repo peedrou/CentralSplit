@@ -76,7 +76,8 @@ class CreateExpense(AbstractCreateExpense):
         DBM.update_document_non_array_attribute(doc_ref, {"totalToReceive": total_to_receive_current_value + custom_amount})
 
     def handle_add_expense_to_group(self, doc_ref: fs.DocumentReference):
-        DBM.update_document_non_array_attribute(doc_ref, {"totalExpenses":self.amount})
+        total_debt = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(doc_ref, "totalExpenses")
+        DBM.update_document_non_array_attribute(doc_ref, {"totalExpenses": total_debt + self.amount})
 
     def get_receiver_docs(self):
         db = DBM.get_db()
