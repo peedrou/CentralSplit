@@ -7,7 +7,7 @@ from google.cloud import firestore as fs
 
 @dataclass
 class RemoveExpense(AbstractRemoveExpense):
-    amount: float
+    amount_for_each: float
     payer: str
     receivers: List[str] | str
     group: str | None
@@ -65,8 +65,8 @@ class RemoveExpense(AbstractRemoveExpense):
             current_debt = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(user_doc, f"moneyTO{receiver}")
             total_debt = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(user_doc, "totalToPay")
 
-            DBM.update_document_non_array_attribute(user_doc, {f"moneyTO{receiver}": current_debt - self.amount})
-            DBM.update_document_non_array_attribute(user_doc, {"totalToPay": total_debt - self.amount})
+            DBM.update_document_non_array_attribute(user_doc, {f"moneyTO{receiver}": current_debt - self.amount_for_each})
+            DBM.update_document_non_array_attribute(user_doc, {"totalToPay": total_debt - self.amount_for_each})
         except Exception as e:
             print(f"Error: {e}")
 
@@ -76,8 +76,8 @@ class RemoveExpense(AbstractRemoveExpense):
             current_debt = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(receiver_doc, f"moneyFROM{self.payer}")
             total_debt = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(receiver_doc, "totalToReceive")
 
-            DBM.update_document_non_array_attribute(receiver_doc, {f"moneyFROM{self.payer}": current_debt - self.amount})
-            DBM.update_document_non_array_attribute(receiver_doc, {"totalToReceive": total_debt - self.amount})
+            DBM.update_document_non_array_attribute(receiver_doc, {f"moneyFROM{self.payer}": current_debt - self.amount_for_each})
+            DBM.update_document_non_array_attribute(receiver_doc, {"totalToReceive": total_debt - self.amount_for_each})
         except Exception as e:
             print(f"Error: {e}")
 
@@ -86,7 +86,7 @@ class RemoveExpense(AbstractRemoveExpense):
             group_doc = DBM.check_if_property_exists_in_collection_and_return_doc(db, "Groups", "groupName", self.group)[0]
             total_debt = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(group_doc, "totalExpenses")
 
-            DBM.update_document_non_array_attribute(group_doc, {f"totalExpenses": total_debt - self.amount})
+            DBM.update_document_non_array_attribute(group_doc, {f"totalExpenses": total_debt - self.amount_for_each})
         except Exception as e:
             print(f"Error: {e}")
 
@@ -115,9 +115,9 @@ class RemoveExpense(AbstractRemoveExpense):
                 result = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(user_doc, f"moneyTO{self.receivers}")
                 if result == False:
                     return False
-                elif result - self.amount > 0:
+                elif result - self.amount_for_each > 0:
                     return False
-                elif result - self.amount < 0:
+                elif result - self.amount_for_each < 0:
                     raise Exception("The amount you are trying to pay is higher than the total debt")
                 else:
                     return True
@@ -126,9 +126,9 @@ class RemoveExpense(AbstractRemoveExpense):
                     result = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(user_doc, f"moneyTO{receiver}")
                     if result == False:
                         return False
-                    elif result - self.amount > 0:
-                        return False
-                    elif result - self.amount < 0:
+                    elif result - self.amount_for_each > 0:
+                        return False # MIGHT BE ELIMINATED FOR ONE BUT NOT FOR OTHERS, THIS STOPS BEFORE FINDING OUT
+                    elif result - self.amount_for_each < 0:
                         raise Exception("The amount you are trying to pay is higher than the total debt")
                 return True
         except Exception as e:

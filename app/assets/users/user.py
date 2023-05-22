@@ -110,7 +110,6 @@ class User(AbstractUser):
 
     def create_expense(
             self,
-            payer: str | str,
             receivers: List[str] | str,
             amount: float,
             group: str | None,
@@ -120,7 +119,7 @@ class User(AbstractUser):
 
         new_expense = ITT.instantiate_create_expense(
             amount=amount,
-            payer=payer,
+            payer=self.username,
             receivers=receivers,
             group=group,
             customAmounts=custom_amounts,
@@ -140,8 +139,23 @@ class User(AbstractUser):
         balance = total_to_receive - total_to_pay
         return balance
 
-    def pay_user(self, userID: str, amount: float):
-        db = DBM.get_db()
+    def pay_user(
+            self, 
+            amount_for_each: float,
+            receivers: List[str] | str,
+            group: str | None
+        ) -> bool:
+
+        remove_expense = ITT.instantiate_remove_expense(
+            amount_for_each=amount_for_each,
+            payer=self.username,
+            receivers=receivers,
+            group=group
+        )
+
+        remove_expense.handle_remove_expense_amount()
+
+        return True
 
     
 

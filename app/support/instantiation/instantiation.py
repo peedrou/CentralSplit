@@ -42,14 +42,14 @@ class Instantiation():
     
     @staticmethod
     def instantiate_remove_expense(
-            amount: float,
+            amount_for_each: float,
             payer: str,
             receivers: List[str] | str,
             group: str | None
         ):
     
-        instantiatedRemoveExpense = CreateExpense(
-            amount=amount,
+        instantiatedRemoveExpense = RemoveExpense(
+            amount_for_each=amount_for_each,
             payer=payer,
             receivers=receivers,
             group=group

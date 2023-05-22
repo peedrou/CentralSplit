@@ -25,6 +25,53 @@ class TestUser():
         random_string = ''.join(random.choices(my_string, k=10))
         groupName = "Group" + " " + random_string
         return groupName
+    
+    def _make_two_users_and_register(self):
+        user1 = User(
+            email=self._make_random_email(),
+            username=self._make_random_username(),
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+
+        user2 = User(
+            email=self._make_random_email(),
+            username=self._make_random_username(),
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+
+        user1.register_user()
+        user2.register_user()
+        return user1,user2
+    
+    def _make_three_users_and_register(self):
+        user1, user2 = self._make_two_users_and_register()
+
+        user3 = User(
+            email=self._make_random_email(),
+            username=self._make_random_username(),
+            UID="",
+            groups=[],
+            friends=[],
+            usersToPay={},
+            usersToReceive={},
+            totalToPay=0,
+            totalToReceive=0
+        )
+
+        user3.register_user()
+        return user1,user2,user3
 
     def test_register_user(self):
         user = User(
@@ -180,64 +227,14 @@ class TestUser():
         assert response == ['user2']
 
     def test_add_friend(self):
-        user1 = User(
-            email=self._make_random_email(),
-            username=self._make_random_username(),
-            UID="",
-            groups=[],
-            friends=[],
-            usersToPay={},
-            usersToReceive={},
-            totalToPay=0,
-            totalToReceive=0
-        )
-
-        user2 = User(
-            email=self._make_random_email(),
-            username=self._make_random_username(),
-            UID="",
-            groups=[],
-            friends=[],
-            usersToPay={},
-            usersToReceive={},
-            totalToPay=0,
-            totalToReceive=0
-        )
-
-        user1.register_user()
-        user2.register_user()
+        user1, user2 = self._make_two_users_and_register()
 
         response = user1.add_friend(user2.email, user2.username)
 
         assert response == True
 
     def test_remove_friend(self):
-        user1 = User(
-            email=self._make_random_email(),
-            username=self._make_random_username(),
-            UID="",
-            groups=[],
-            friends=[],
-            usersToPay={},
-            usersToReceive={},
-            totalToPay=0,
-            totalToReceive=0
-        )
-
-        user2 = User(
-            email=self._make_random_email(),
-            username=self._make_random_username(),
-            UID="",
-            groups=[],
-            friends=[],
-            usersToPay={},
-            usersToReceive={},
-            totalToPay=0,
-            totalToReceive=0
-        )
-
-        user1.register_user()
-        user2.register_user()
+        user1, user2 = self._make_two_users_and_register()
         user1.add_friend(user2.email, user2.username)
 
         response = user1.remove_friend(user2.email, user2.username)
@@ -245,32 +242,7 @@ class TestUser():
         assert response == True
 
     def test_check_debt_with_friend(self):
-        user1 = User(
-            email=self._make_random_email(),
-            username=self._make_random_username(),
-            UID="",
-            groups=[],
-            friends=[],
-            usersToPay={},
-            usersToReceive={},
-            totalToPay=0,
-            totalToReceive=0
-        )
-
-        user2 = User(
-            email=self._make_random_email(),
-            username=self._make_random_username(),
-            UID="",
-            groups=[],
-            friends=[],
-            usersToPay={},
-            usersToReceive={},
-            totalToPay=0,
-            totalToReceive=0
-        )
-
-        user1.register_user()
-        user2.register_user()
+        user1, user2 = self._make_two_users_and_register()
         user1.add_friend(user2.email, user2.username)
 
         money_owed_message, money_to_receive_message = user1.check_debt_with_friend(user2.email, user2.username)
@@ -279,35 +251,9 @@ class TestUser():
         assert money_to_receive_message == f'You must receive 0'
 
     def test_create_single_split_expense(self):
-        user1 = User(
-            email=self._make_random_email(),
-            username=self._make_random_username(),
-            UID="",
-            groups=[],
-            friends=[],
-            usersToPay={},
-            usersToReceive={},
-            totalToPay=0,
-            totalToReceive=0
-        )
-
-        user2 = User(
-            email=self._make_random_email(),
-            username=self._make_random_username(),
-            UID="",
-            groups=[],
-            friends=[],
-            usersToPay={},
-            usersToReceive={},
-            totalToPay=0,
-            totalToReceive=0
-        )
-
-        user1.register_user()
-        user2.register_user()
+        user1, user2 = self._make_two_users_and_register()
 
         result = user1.create_expense(
-            payer=user1.username,
             receivers=user2.username,
             amount=100,
             group=None,
@@ -318,48 +264,9 @@ class TestUser():
         assert result == True
     
     def test_create_equal_split_expense(self):
-        user1 = User(
-            email=self._make_random_email(),
-            username=self._make_random_username(),
-            UID="",
-            groups=[],
-            friends=[],
-            usersToPay={},
-            usersToReceive={},
-            totalToPay=0,
-            totalToReceive=0
-        )
-
-        user2 = User(
-            email=self._make_random_email(),
-            username=self._make_random_username(),
-            UID="",
-            groups=[],
-            friends=[],
-            usersToPay={},
-            usersToReceive={},
-            totalToPay=0,
-            totalToReceive=0
-        )
-
-        user3 = User(
-            email=self._make_random_email(),
-            username=self._make_random_username(),
-            UID="",
-            groups=[],
-            friends=[],
-            usersToPay={},
-            usersToReceive={},
-            totalToPay=0,
-            totalToReceive=0
-        )
-
-        user1.register_user()
-        user2.register_user()
-        user3.register_user()
+        user1, user2, user3 = self._make_three_users_and_register()
 
         result = user1.create_expense(
-            payer=user1.username,
             receivers=[user2.username, user3.username],
             amount=100,
             group=None,
@@ -369,36 +276,11 @@ class TestUser():
 
         assert result == True
 
+
     def test_check_balance(self):
-        user1 = User(
-            email=self._make_random_email(),
-            username=self._make_random_username(),
-            UID="",
-            groups=[],
-            friends=[],
-            usersToPay={},
-            usersToReceive={},
-            totalToPay=0,
-            totalToReceive=0
-        )
-
-        user2 = User(
-            email=self._make_random_email(),
-            username=self._make_random_username(),
-            UID="",
-            groups=[],
-            friends=[],
-            usersToPay={},
-            usersToReceive={},
-            totalToPay=0,
-            totalToReceive=0
-        )
-
-        user1.register_user()
-        user2.register_user()
+        user1, user2 = self._make_two_users_and_register()
 
         user1.create_expense(
-            payer=user1.username,
             receivers=[user2.username],
             amount=100,
             group=None,
@@ -409,4 +291,74 @@ class TestUser():
         balance = user1.check_total_balance()
 
         assert balance == -100
+
+    def test_remove_expense_partial_one_receiver(self):
+        user1, user2 = self._make_two_users_and_register()
+
+        user1.create_expense(
+            receivers=[user2.username],
+            amount=100,
+            group=None,
+            custom_amounts=None,
+            split_method="single"
+        )
+
+        result = user1.pay_user(
+            amount_for_each=75,
+            receivers=user2.username,
+            group=None
+        )
+
+        assert result == True
+
+    def test_remove_expense_partial_multiple_receivers(self):
+        user1, user2, user3 = self._make_three_users_and_register()
+
+        user1.create_expense(
+            receivers=[user2.username, user3.username],
+            amount=100,
+            group=None,
+            custom_amounts=None,
+            split_method="equal"
+        )
+
+        result = user1.pay_user(
+            amount_for_each=30,
+            receivers=[user2.username, user3.username],
+            group=None
+        )
+
+        assert result == True
+
+    def test_remove_expense_total_one_receiver(self):
+        user1, user2 = self._make_two_users_and_register()
+
+        user1.create_expense(
+            receivers=[user2.username],
+            amount=100,
+            group=None,
+            custom_amounts=None,
+            split_method="single"
+        )
+
+        balance = user1.check_total_balance()
+
+        assert balance == -100
+
+    def test_remove_expense_total_multiple_receivers(self):
+        user1, user2 = self._make_two_users_and_register()
+
+        user1.create_expense(
+            receivers=[user2.username],
+            amount=100,
+            group=None,
+            custom_amounts=None,
+            split_method="single"
+        )
+
+        balance = user1.check_total_balance()
+
+        assert balance == -100
+
+    
   

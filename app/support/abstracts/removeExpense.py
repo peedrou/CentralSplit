@@ -4,7 +4,7 @@ from typing import List
 
 @dataclass
 class AbstractRemoveExpense(ABC):
-    amount: float
+    amount_for_each: float
     payer: str
     receivers: List[str] | str
     group: str | None
