@@ -341,24 +341,32 @@ class TestUser():
             split_method="single"
         )
 
-        balance = user1.check_total_balance()
+        result = user1.pay_user(
+            amount_for_each=100,
+            receivers=user2.username,
+            group=None
+        )
 
-        assert balance == -100
+        assert result == True
 
     def test_remove_expense_total_multiple_receivers(self):
-        user1, user2 = self._make_two_users_and_register()
+        user1, user2, user3 = self._make_three_users_and_register()
 
         user1.create_expense(
-            receivers=[user2.username],
+            receivers=[user2.username, user3.username],
             amount=100,
             group=None,
             custom_amounts=None,
-            split_method="single"
+            split_method="equal"
         )
 
-        balance = user1.check_total_balance()
+        result = user1.pay_user(
+            amount_for_each=50,
+            receivers=[user2.username, user3.username],
+            group=None
+        )
 
-        assert balance == -100
+        assert result == True
 
     
   

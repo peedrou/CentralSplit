@@ -16,23 +16,23 @@ class RemoveExpense(AbstractRemoveExpense):
     def handle_remove_expense_amount(self):
         db = DBM.get_db()
         expense_exists = self.check_if_expense_exists(db)
-        expense_will_be_eliminated = self.check_if_expense_is_going_to_be_eliminated(db)
 
         if expense_exists == True:
             if isinstance(self.receivers, str):
+                expense_will_be_eliminated = self.check_if_expense_is_going_to_be_eliminated(db, self.receivers)
                 self.remove_expense_from_payer(db, self.receivers)
                 self.remove_expense_from_receiver(db, self.receivers)
+
+                if expense_will_be_eliminated == True:
+                    self.eliminate_expense_from_receiver(db, self.receivers)
+                    self.eliminate_expense_from_payer(db, self.receivers)
             else:
                 for receiver in self.receivers:
+                    expense_will_be_eliminated = self.check_if_expense_is_going_to_be_eliminated(db, receiver)
                     self.remove_expense_from_payer(db, receiver)
                     self.remove_expense_from_receiver(db, receiver)
 
-            if expense_will_be_eliminated == True:
-                if isinstance(self.receivers, str):
-                    self.eliminate_expense_from_receiver(db, self.receivers)
-                    self.eliminate_expense_from_payer(db, self.receivers)
-                else:
-                    for receiver in self.receivers:
+                    if expense_will_be_eliminated == True:
                         self.eliminate_expense_from_receiver(db, receiver)
                         self.eliminate_expense_from_payer(db, receiver)
 
@@ -108,11 +108,11 @@ class RemoveExpense(AbstractRemoveExpense):
         except Exception as e:
             print(f"Error: {e}")
 
-    def check_if_expense_is_going_to_be_eliminated(self, db: fs.Client) -> bool:
+    def check_if_expense_is_going_to_be_eliminated(self, db: fs.Client, receiver) -> bool:
         user_doc = DBM.check_if_property_exists_in_collection_and_return_doc(db, "Users", "username", self.payer)[0]
         try:
-            if isinstance(self.receivers, str):
-                result = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(user_doc, f"moneyTO{self.receivers}")
+            if isinstance(receiver, str):
+                result = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(user_doc, f"moneyTO{receiver}")
                 if result == False:
                     return False
                 elif result - self.amount_for_each > 0:
@@ -122,14 +122,6 @@ class RemoveExpense(AbstractRemoveExpense):
                 else:
                     return True
             else:
-                for receiver in self.receivers:
-                    result = DBM.check_if_property_exists_in_document_with_doc_ref_and_return_value(user_doc, f"moneyTO{receiver}")
-                    if result == False:
-                        return False
-                    elif result - self.amount_for_each > 0:
-                        return False # MIGHT BE ELIMINATED FOR ONE BUT NOT FOR OTHERS, THIS STOPS BEFORE FINDING OUT
-                    elif result - self.amount_for_each < 0:
-                        raise Exception("The amount you are trying to pay is higher than the total debt")
-                return True
+                raise Exception("Error: Something went wrong with eliminating the expense")
         except Exception as e:
             print(f"Error: {e}")
