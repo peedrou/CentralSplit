@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from typing import List, Optional
+from typing import List
 
 from app.assets.groups.group import Group
 from app.assets.friends.friend import Friend
