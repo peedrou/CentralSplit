@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from app.assets.users.user import User
 from app.data.db_methods import DataBaseMethods as DBM
 from pydantic import BaseModel
+from typing import List
 
 app = FastAPI()
 
@@ -15,9 +16,6 @@ class UserInfo(BaseModel):
     usersToReceive: dict[str, float]
     totalToPay: float
     totalToReceive: float
-
-class Username(BaseModel):
-    username: str
 
 
 @app.post("/user-info")
@@ -47,3 +45,51 @@ def _return_user_info_from_username(username: str) -> UserInfo:
     )
 
     return user_info
+
+@app.post("/create-group")
+def create_group(
+    username: str = Query(..., description="The username of the user"),
+    groupName: str = Query(..., description="The name of the group"),
+    members: List[str] = Query(None, description="A list of member usernames")
+):
+    user_info = _return_user_info_from_username(username)
+    user = User(
+        email=user_info.email,
+        username=user_info.username,
+        UID=user_info.UID,
+        groups=user_info.groups,
+        friends=user_info.friends,
+        usersToPay=user_info.usersToPay,
+        usersToReceive=user_info.usersToReceive,
+        totalToPay=user_info.totalToPay,
+        totalToReceive=user_info.totalToReceive
+    )
+    user.create_group(userIDS=members, groupName=groupName)
+
+    return f"Group {groupName} was created sucessfully"
+
+@app.post("/delete-group")
+def delete_group(
+    username: str = Query(..., description="The username of the user"),
+    groupName: str = Query(..., description="The name of the group"),
+    members: None = Query(None, description="A list of member usernames")
+):
+    user_info = _return_user_info_from_username(username)
+    user = User(
+        email=user_info.email,
+        username=user_info.username,
+        UID=user_info.UID,
+        groups=user_info.groups,
+        friends=user_info.friends,
+        usersToPay=user_info.usersToPay,
+        usersToReceive=user_info.usersToReceive,
+        totalToPay=user_info.totalToPay,
+        totalToReceive=user_info.totalToReceive
+    )
+    result = user.delete_group(userIDS=members, groupName=groupName)
+    if result == True:
+        return f"Group {groupName} was deleted sucessfully"
+    else:
+        return f"Group {groupName} was not deleted due to an error"
+
+    
